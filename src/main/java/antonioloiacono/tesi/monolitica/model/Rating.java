@@ -1,4 +1,4 @@
-package antonioloiacono.tesi.monolitica.entities;
+package antonioloiacono.tesi.monolitica.model;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -7,10 +7,10 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ratings")
+@AllArgsConstructor
 
+@Table(name = "ratings")
 public class Rating {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

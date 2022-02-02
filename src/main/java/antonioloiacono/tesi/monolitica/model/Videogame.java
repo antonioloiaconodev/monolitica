@@ -1,15 +1,17 @@
-package antonioloiacono.tesi.monolitica.entities;
+package antonioloiacono.tesi.monolitica.model;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 import javax.persistence.*;
-import java.util.Set;
+import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+
 @Table(name = "videogames")
 public class Videogame {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +21,11 @@ public class Videogame {
     private String platform;
     private String genre;
     private String publisher;
-    private String release;
+    private Date release;
 
     @ManyToMany(mappedBy = "videogames")
-    private Set<User> users;
+    private List<User> users;
 
     @OneToMany(mappedBy = "videogame")
-    private Set<Rating> ratings;
+    private List<Rating> ratings;
 }
