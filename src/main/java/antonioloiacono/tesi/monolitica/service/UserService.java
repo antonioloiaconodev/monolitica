@@ -9,12 +9,11 @@ public interface UserService {
 
     List<UserDTO> findAllUsers();
 
-    UserDTO findUserById(Long id);
+    UserDTO findUserByUsername(String username);
 
-    void updateUser(Long id, UserDTO userDTO);
+    void updateUser(String username, UserDTO userDTO);
 
-    void deleteUser(Long id);
+    void deleteUser(String username);
 
-    //List<UserDTO> findAuthorOlder55();
     //List<UserDTO> findAuthorWithMostCountOfBooks();
 }

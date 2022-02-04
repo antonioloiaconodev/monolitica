@@ -14,6 +14,8 @@ import java.util.List;
 
 public class VideogameDTO {
 
+    private Long id;
+
     private String name;
 
     private String platform;
@@ -26,5 +28,5 @@ public class VideogameDTO {
 
     private List<User> users;
 
-    private List<Rating> ratings;
+    //private List<Rating> ratings;
 }

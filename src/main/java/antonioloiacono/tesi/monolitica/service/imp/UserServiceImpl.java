@@ -34,21 +34,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findUserById(Long id) {
-        User user = userRepository.findById(id).get();
+    public UserDTO findUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         return userDTO;
     }
 
     @Override
-    public void updateUser(Long id, UserDTO userDTO) {
+    public void updateUser(String username, UserDTO userDTO) {
+        Long id = userRepository.findByUsername(username).getId();
         User user = modelMapper.map(userDTO, User.class);
         user.setId(id);
         userRepository.save(user);
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String username) {
+        Long id = userRepository.findByUsername(username).getId();
         userRepository.deleteById(id);
     }
 

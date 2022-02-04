@@ -34,21 +34,23 @@ public class VideogameServiceImpl implements VideogameService {
     }
 
     @Override
-    public VideogameDTO findVideogameById(Long id) {
-        Videogame videogame = videogameRepository.findById(id).get();
+    public VideogameDTO findVideogameByName(String name) {
+        Videogame videogame = videogameRepository.findByName(name);
         VideogameDTO videogameDTO = modelMapper.map(videogame, VideogameDTO.class);
         return videogameDTO;
     }
 
     @Override
-    public void updateVideogame(Long id, VideogameDTO videogameDTO) {
+    public void updateVideogame(String name, VideogameDTO videogameDTO) {
+        Long id = videogameRepository.findByName(name).getId();
         Videogame videogame = modelMapper.map(videogameDTO, Videogame.class);
         videogame.setId(id);
         videogameRepository.save(videogame);
     }
 
     @Override
-    public void deleteVideogame(Long id) {
+    public void deleteVideogame(String name) {
+        Long id = videogameRepository.findByName(name).getId();
         videogameRepository.deleteById(id);
     }
 

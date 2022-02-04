@@ -14,6 +14,8 @@ import java.util.List;
 
 public class UserDTO {
 
+    private Long id;
+
     private String username;
 
     private String firstName;
@@ -22,6 +24,6 @@ public class UserDTO {
 
     private List<Videogame> videogames;
 
-    private List<Rating> ratings;
+    //private List<Rating> ratings;
 
 }

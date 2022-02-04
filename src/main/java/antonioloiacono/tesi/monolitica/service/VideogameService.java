@@ -10,11 +10,11 @@ public interface VideogameService {
 
     List<VideogameDTO> findAllVideogames();
 
-    VideogameDTO findVideogameById(Long id);
+    VideogameDTO findVideogameByName(String name);
 
-    void updateVideogame(Long id, VideogameDTO videogameDTO);
+    void updateVideogame(String name, VideogameDTO videogameDTO);
 
-    void deleteVideogame(Long id);
+    void deleteVideogame(String name);
 
     //VideogameDTO findCountByGenre(String genre);
     //VideogameDTO findVideogame();
