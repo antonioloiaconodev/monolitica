@@ -1,76 +1,86 @@
 package antonioloiacono.tesi.monolitica.controller;
 
-
 import antonioloiacono.tesi.monolitica.dto.VideogameDTO;
+import antonioloiacono.tesi.monolitica.entity.User;
+import antonioloiacono.tesi.monolitica.entity.Videogame;
+import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import antonioloiacono.tesi.monolitica.service.UserService;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
-import org.springframework.beans.factory.annotation.Autowired;
+import antonioloiacono.tesi.monolitica.util.ObjectMapperUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
-
+import javax.validation.Valid;
 import java.util.List;
-
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/videogames")
 public class VideogameController {
 
     private final VideogameService videogameService;
+    private final UserService userService;
+    private final ObjectMapperUtils modelMapper;
 
-    @Autowired
-    public VideogameController(VideogameService videogameService) {
+    public VideogameController(VideogameService videogameService, UserService userService,ObjectMapperUtils modelMapper) {
         this.videogameService = videogameService;
+        this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
-    public ResponseEntity<Void> createVideogame(@RequestBody VideogameDTO dto){
-        videogameService.createVideogame(dto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Videogame> createVideogame(@Valid @RequestBody VideogameDTO dto) throws ResourceNotFoundException {
+        Integer userId = dto.getUserId();
+        Videogame videogame = modelMapper.map(dto, Videogame.class);
+        if(userId != null) {
+            if (userId.intValue() > 0) {
+                Optional<User> optionalUser = userService.findUserById(userId);
+                if (optionalUser.isEmpty()) {
+                    throw new ResourceNotFoundException("No user found with the Id: " + userId);
+                }
+                videogame.addUser(optionalUser.get());
+            } else {
+                throw new ResourceNotFoundException("The user's Id must be greater than 0");
+            }
+        }
+        Videogame createdVideogame = videogameService.saveVideogame(videogame);
+        return new ResponseEntity<>(createdVideogame, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<VideogameDTO>> findAllVideogames(){
-        List<VideogameDTO> dtos = videogameService.findAllVideogames();
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    public ResponseEntity<List<Videogame>> findAllVideogames(){
+        return new ResponseEntity<>(videogameService.findAllVideogames(), HttpStatus.OK);
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<VideogameDTO> findVideogameByName(@PathVariable("name") String name){
-        VideogameDTO dto = videogameService.findVideogameByName(name);
-        return new ResponseEntity<>(dto , HttpStatus.OK);
-    }
-
-    @PutMapping("/{name}")
-    public ResponseEntity<Void> updateVideogame(@PathVariable("name") String name , @RequestBody VideogameDTO dto){
-        VideogameDTO videogameDTO = videogameService.findVideogameByName(name);
-        if(videogameDTO != null) {
-            videogameService.updateVideogame(name, dto);
-            return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/{videogameId}")
+    public ResponseEntity<Videogame> findVideogameById(@PathVariable("videogameId") int id) throws ResourceNotFoundException {
+        Optional<Videogame> optionalVideogame = videogameService.findVideogameById(id);
+        if (optionalVideogame.isEmpty()) {
+            throw new ResourceNotFoundException("No videogame found with the id: " + id);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(optionalVideogame.get() , HttpStatus.OK);
     }
-    @DeleteMapping("/{name}")
-    public ResponseEntity<Void> deleteVideogameByName(@PathVariable("name") String name){
-        VideogameDTO videogameDTO = videogameService.findVideogameByName(name);
+
+    /*@PutMapping("/{videogameId}")
+    public ResponseEntity<Void> updateVideogame(@PathVariable("videogameId") Long id, @RequestBody VideogameDTO dto){
+        VideogameDTO videogameDTO = videogameService.findVideogameById(id);
         if(videogameDTO != null) {
-            videogameService.deleteVideogame(name);
+            dto.setId(id);
+            videogameService.saveVideogame(dto);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    /*
-    //SELECT *  , count(ab.author_id) FROM author_book ab join author a on ab.book_id = a.id;
-    @GetMapping("/findOlder55")
-    public ResponseEntity<List<AuthorDTO>> findOlder55(){
-        List<AuthorDTO> authordto = authorService.findAuthorOlder55();
-        return new ResponseEntity<>(authordto, HttpStatus.OK);
-
-    }
-    @GetMapping("/findAuthor")
-    public ResponseEntity<List<AuthorDTO>> findAuthorWithMostBooks(){
-        List<AuthorDTO> dto = authorService.findAuthorWithMostCountOfBooks();
-        return new ResponseEntity<>(dto , HttpStatus.OK);
-    }
-     */
+    @DeleteMapping("/{videogameId}")
+    public ResponseEntity<Void> deleteVideogameById(@PathVariable("videogameId") Long id){
+        VideogameDTO videogameDTO = videogameService.findVideogameById(id);
+        if(videogameDTO != null) {
+            videogameService.deleteVideogame(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }*/
+    
 }

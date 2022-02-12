@@ -1,56 +1,40 @@
 package antonioloiacono.tesi.monolitica.service.imp;
 
-import antonioloiacono.tesi.monolitica.dto.UserDTO;
-import antonioloiacono.tesi.monolitica.model.User;
+import antonioloiacono.tesi.monolitica.entity.User;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.service.UserService;
-import antonioloiacono.tesi.monolitica.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final ObjectMapperUtils modelMapper;
-
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ObjectMapperUtils modelMapper) {
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
+    UserRepository userRepository;
+
+    @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public void createUser(UserDTO userDTO) {
-        userRepository.save(modelMapper.map(userDTO, User.class));
+    public List<User> findAllUsers() {
+        List<User> users = new ArrayList<>();
+        userRepository.findAll().forEach(users::add);
+        return users;
     }
 
     @Override
-    public List<UserDTO> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserDTO> userDTOS = modelMapper.mapAll(users, UserDTO.class);
-        return userDTOS;
+    public Optional<User> findUserById(Integer id) {
+        return userRepository.findById(id);
     }
 
     @Override
-    public UserDTO findUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        return userDTO;
-    }
-
-    @Override
-    public void updateUser(String username, UserDTO userDTO) {
-        Long id = userRepository.findByUsername(username).getId();
-        User user = modelMapper.map(userDTO, User.class);
-        user.setId(id);
-        userRepository.save(user);
-    }
-
-    @Override
-    public void deleteUser(String username) {
-        Long id = userRepository.findByUsername(username).getId();
+    public void deleteUser(Integer id) {
         userRepository.deleteById(id);
     }
 

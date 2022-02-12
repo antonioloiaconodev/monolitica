@@ -1,21 +1,16 @@
 package antonioloiacono.tesi.monolitica.service;
 
-import antonioloiacono.tesi.monolitica.dto.VideogameDTO;
-
+import antonioloiacono.tesi.monolitica.entity.Videogame;
 import java.util.List;
+import java.util.Optional;
 
 public interface VideogameService {
 
-    void createVideogame(VideogameDTO videogameDTO);
+    Videogame saveVideogame(Videogame videogame);
 
-    List<VideogameDTO> findAllVideogames();
+    List<Videogame> findAllVideogames();
 
-    VideogameDTO findVideogameByName(String name);
+    Optional<Videogame> findVideogameById(int id);
 
-    void updateVideogame(String name, VideogameDTO videogameDTO);
-
-    void deleteVideogame(String name);
-
-    //VideogameDTO findCountByGenre(String genre);
-    //VideogameDTO findVideogame();
+    void deleteVideogame(int id);
 }

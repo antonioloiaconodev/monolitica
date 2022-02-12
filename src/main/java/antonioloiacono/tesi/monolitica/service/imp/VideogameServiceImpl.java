@@ -1,56 +1,42 @@
 package antonioloiacono.tesi.monolitica.service.imp;
 
-import antonioloiacono.tesi.monolitica.dto.VideogameDTO;
-import antonioloiacono.tesi.monolitica.model.Videogame;
+import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
-import antonioloiacono.tesi.monolitica.util.ObjectMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VideogameServiceImpl implements VideogameService {
 
     private final VideogameRepository videogameRepository;
-    private final ObjectMapperUtils modelMapper;
 
-    @Autowired
-    public VideogameServiceImpl(VideogameRepository videogameRepository, ObjectMapperUtils modelMapper) {
+    public VideogameServiceImpl(VideogameRepository videogameRepository) {
         this.videogameRepository = videogameRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Override
-    public void createVideogame(VideogameDTO videogameDTO) {
-        videogameRepository.save(modelMapper.map(videogameDTO, Videogame.class));
+    public Videogame saveVideogame(Videogame videogame) {
+        return videogameRepository.save(videogame);
     }
 
     @Override
-    public List<VideogameDTO> findAllVideogames() {
-        List<Videogame> videogame = videogameRepository.findAll();
-        List<VideogameDTO> videogameDTOS =  modelMapper.mapAll(videogame, VideogameDTO.class);
-        return videogameDTOS;
+    public List<Videogame> findAllVideogames() {
+        List<Videogame> videogames = new ArrayList<>();
+        videogameRepository.findAll().forEach(videogames::add);
+        return videogames;
     }
 
     @Override
-    public VideogameDTO findVideogameByName(String name) {
-        Videogame videogame = videogameRepository.findByName(name);
-        VideogameDTO videogameDTO = modelMapper.map(videogame, VideogameDTO.class);
-        return videogameDTO;
+    public Optional<Videogame> findVideogameById(int id) {
+        return videogameRepository.findById(id);
     }
 
     @Override
-    public void updateVideogame(String name, VideogameDTO videogameDTO) {
-        Long id = videogameRepository.findByName(name).getId();
-        Videogame videogame = modelMapper.map(videogameDTO, Videogame.class);
-        videogame.setId(id);
-        videogameRepository.save(videogame);
-    }
-
-    @Override
-    public void deleteVideogame(String name) {
-        Long id = videogameRepository.findByName(name).getId();
+    public void deleteVideogame(int id) {
         videogameRepository.deleteById(id);
     }
 

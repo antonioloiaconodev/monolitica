@@ -1,19 +1,16 @@
 package antonioloiacono.tesi.monolitica.service;
 
-import antonioloiacono.tesi.monolitica.dto.UserDTO;
+import antonioloiacono.tesi.monolitica.entity.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
-    void createUser(UserDTO userDTO);
+    User saveUser(User user);
 
-    List<UserDTO> findAllUsers();
+    List<User> findAllUsers();
 
-    UserDTO findUserByUsername(String username);
+    Optional<User> findUserById(Integer id);
 
-    void updateUser(String username, UserDTO userDTO);
-
-    void deleteUser(String username);
-
-    //List<UserDTO> findAuthorWithMostCountOfBooks();
+    void deleteUser(Integer id);
 }
