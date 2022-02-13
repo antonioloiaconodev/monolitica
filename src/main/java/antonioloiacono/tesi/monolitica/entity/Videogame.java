@@ -31,7 +31,7 @@ public class Videogame {
     private Date releaseDate;
 
     @ManyToMany(targetEntity = User.class, mappedBy = "videogames")
-   // @JsonManagedReference(value = "videogames-users")
+    @JsonManagedReference(value = "videogames-users")
     private List<User> users = new ArrayList<>();
 
     @OneToMany(targetEntity = Comment.class, mappedBy = "videogame")

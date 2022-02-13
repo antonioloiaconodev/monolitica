@@ -1,16 +1,20 @@
 package antonioloiacono.tesi.monolitica.service;
 
+import antonioloiacono.tesi.monolitica.dto.UserSaveDTO;
+import antonioloiacono.tesi.monolitica.dto.UserUpdateDTO;
 import antonioloiacono.tesi.monolitica.entity.User;
+import antonioloiacono.tesi.monolitica.exception.ResourceAlreadyExistsException;
+import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
+    User saveUser(UserSaveDTO dto) throws ResourceAlreadyExistsException;
 
-    User saveUser(User user);
+    User updateUser(Long id, UserUpdateDTO dto) throws ResourceNotFoundException;
 
-    List<User> findAllUsers();
+    List<User> findAllUsers() throws ResourceNotFoundException;
 
-    Optional<User> findUserById(Integer id);
+    User findUserById(Long id) throws ResourceNotFoundException;
 
-    void deleteUser(Integer id);
+    void deleteUser(Long id) throws ResourceNotFoundException;
 }

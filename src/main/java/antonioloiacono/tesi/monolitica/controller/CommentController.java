@@ -4,7 +4,7 @@ import antonioloiacono.tesi.monolitica.dto.CommentDTO;
 import antonioloiacono.tesi.monolitica.entity.Comment;
 import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
 import antonioloiacono.tesi.monolitica.service.CommentService;
-import antonioloiacono.tesi.monolitica.util.ObjectMapperUtils;
+import antonioloiacono.tesi.monolitica.util.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +17,9 @@ import java.util.Optional;
 public class CommentController {
 
     private final CommentService commentService;
-    private final ObjectMapperUtils modelMapper;
+    private final ModelMapper modelMapper;
     
-    public CommentController(CommentService commentService, ObjectMapperUtils modelMapper) {
+    public CommentController(CommentService commentService, ModelMapper modelMapper) {
         this.commentService = commentService;
         this.modelMapper = modelMapper;
     }

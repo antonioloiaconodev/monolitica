@@ -33,14 +33,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handlerResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<?> handlerResourceNotFoundException(ResourceNotFoundException ex) {
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handlerConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+    /*@ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handlerConstraintViolationException(ConstraintViolationException ex) {
         List<String> errors = new ArrayList<>();
         ex.getConstraintViolations().forEach(cv -> errors.add(cv.getMessage()));
         Map<String, List<String>> result = new HashMap<>();
@@ -53,13 +53,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }
+    }*/
 
-    @ExceptionHandler({SQLIntegrityConstraintViolationException.class, SQLException.class, DataAccessException.class, RuntimeException.class})
-    public ResponseEntity<?> handleSQLException(final Exception ex, WebRequest request) {
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<?> handleDatabaseException(Exception ex) {
         Map<String, String> body = new HashMap<>();
         body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

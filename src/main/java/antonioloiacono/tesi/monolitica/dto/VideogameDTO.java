@@ -28,5 +28,5 @@ public class VideogameDTO {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date releaseDate;
 
-    private Integer userId;
+    private Long userId;
 }

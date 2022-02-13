@@ -4,21 +4,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ObjectMapperUtils {
+public class ModelMapper {
 
-    private static ModelMapper modelMapper;
+    private static org.modelmapper.ModelMapper modelMapper;
 
     static {
-        modelMapper = new ModelMapper();
+        modelMapper = new org.modelmapper.ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    private ObjectMapperUtils() {
+    private ModelMapper() {
     }
 
     public <D, T> D map(final T entity, Class<D> outClass) {

@@ -13,13 +13,10 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String email;
-
-    @Column(nullable = false)
-    private String password;
 
     @Column(length = 50, name = "first_name", nullable = false)
     private String firstName;
@@ -29,20 +26,10 @@ public class User {
 
     @ManyToMany(targetEntity = Videogame.class, cascade = CascadeType.REMOVE)
     @JoinTable(name = "user_videogame", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn (name = "videogame_id", referencedColumnName = "id"))
-    //@JsonBackReference(value = "videogames-users")
+    @JsonBackReference(value = "videogames-users")
     private List<Videogame> videogames = new ArrayList<>();
 
     @OneToMany(targetEntity = Comment.class, mappedBy = "user")
     @JsonManagedReference(value = "user-comments")
     private List<Comment> comments = new ArrayList<>();
-
-    /*public void addBook(Book book) {
-        this.books.add(book);
-        book.getAuthors().add(this);
-    }
-
-    public void removeBook(Book book) {
-        this.books.remove(book);
-        book.getAuthors().remove(this);
-    }*/
 }

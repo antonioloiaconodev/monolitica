@@ -6,10 +6,9 @@ import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
 import antonioloiacono.tesi.monolitica.service.UserService;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
-import antonioloiacono.tesi.monolitica.util.ObjectMapperUtils;
+import antonioloiacono.tesi.monolitica.util.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
@@ -21,9 +20,9 @@ public class VideogameController {
 
     private final VideogameService videogameService;
     private final UserService userService;
-    private final ObjectMapperUtils modelMapper;
+    private final ModelMapper modelMapper;
 
-    public VideogameController(VideogameService videogameService, UserService userService,ObjectMapperUtils modelMapper) {
+    public VideogameController(VideogameService videogameService, UserService userService, ModelMapper modelMapper) {
         this.videogameService = videogameService;
         this.userService = userService;
         this.modelMapper = modelMapper;
@@ -31,9 +30,9 @@ public class VideogameController {
 
     @PostMapping
     public ResponseEntity<Videogame> createVideogame(@Valid @RequestBody VideogameDTO dto) throws ResourceNotFoundException {
-        Integer userId = dto.getUserId();
+        Long userId = dto.getUserId();
         Videogame videogame = modelMapper.map(dto, Videogame.class);
-        if(userId != null) {
+        /*if(userId != null) {
             if (userId.intValue() > 0) {
                 Optional<User> optionalUser = userService.findUserById(userId);
                 if (optionalUser.isEmpty()) {
@@ -43,7 +42,7 @@ public class VideogameController {
             } else {
                 throw new ResourceNotFoundException("The user's Id must be greater than 0");
             }
-        }
+        }*/
         Videogame createdVideogame = videogameService.saveVideogame(videogame);
         return new ResponseEntity<>(createdVideogame, HttpStatus.CREATED);
     }
