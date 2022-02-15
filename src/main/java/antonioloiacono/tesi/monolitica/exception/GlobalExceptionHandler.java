@@ -39,22 +39,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    /*@ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handlerConstraintViolationException(ConstraintViolationException ex) {
-        List<String> errors = new ArrayList<>();
-        ex.getConstraintViolations().forEach(cv -> errors.add(cv.getMessage()));
-        Map<String, List<String>> result = new HashMap<>();
-        result.put("errors", errors);
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-    }
-
-    @Override
-    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        Map<String, String> body = new HashMap<>();
-        body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }*/
-
     @ExceptionHandler({Exception.class})
     public ResponseEntity<?> handleDatabaseException(Exception ex) {
         Map<String, String> body = new HashMap<>();

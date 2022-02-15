@@ -1,16 +1,19 @@
 package antonioloiacono.tesi.monolitica.service;
 
+import antonioloiacono.tesi.monolitica.dto.CommentDTO;
 import antonioloiacono.tesi.monolitica.entity.Comment;
-import java.util.List;
-import java.util.Optional;
+import antonioloiacono.tesi.monolitica.exception.ResourceAlreadyExistsException;
+import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import java.util.Set;
 
 public interface CommentService {
+    Comment saveComment(CommentDTO dto) throws ResourceAlreadyExistsException;
 
-    Comment saveComment(Comment comment);
+    Comment updateComment(int id, CommentDTO dto) throws ResourceNotFoundException;
 
-    List<Comment> findAllComments();
+    Set<Comment> findAllComments() throws ResourceNotFoundException;
 
-    Optional<Comment> findCommentById(int id);
+    Comment findCommentById(int id) throws ResourceNotFoundException;
 
-    void deleteComment(int id);
+    void deleteComment(int id) throws ResourceNotFoundException;
 }

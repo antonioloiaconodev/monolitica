@@ -1,16 +1,22 @@
 package antonioloiacono.tesi.monolitica.service;
 
+import antonioloiacono.tesi.monolitica.dto.VideogameSaveDTO;
+import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDTO;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
-import java.util.List;
-import java.util.Optional;
+import antonioloiacono.tesi.monolitica.exception.ResourceAlreadyExistsException;
+import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import java.util.Set;
 
 public interface VideogameService {
+    Videogame saveVideogame(VideogameSaveDTO dto) throws ResourceAlreadyExistsException;
 
-    Videogame saveVideogame(Videogame videogame);
+    Videogame updateVideogame(int id, VideogameUpdateDTO dto) throws ResourceNotFoundException;
 
-    List<Videogame> findAllVideogames();
+    Set<Videogame> findAllVideogames() throws ResourceNotFoundException;
 
-    Optional<Videogame> findVideogameById(int id);
+    Videogame findVideogameById(int id) throws ResourceNotFoundException;
 
-    void deleteVideogame(int id);
+    void deleteVideogame(int id) throws ResourceNotFoundException;
+
+    void addVideogameUser(int userId, Videogame videogame) throws ResourceNotFoundException;
 }

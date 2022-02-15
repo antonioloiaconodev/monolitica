@@ -9,12 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -27,38 +27,23 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> findAllUsers() {
+    public ResponseEntity<Set<User>> findAllUsers() {
         return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> findUserById(@PathVariable("userId") Long id) {
+    public ResponseEntity<User> findUserById(@PathVariable("userId") int id) {
         return new ResponseEntity<>(userService.findUserById(id) , HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable("userId") Long id, @Valid @RequestBody UserUpdateDTO req) {
+    public ResponseEntity<User> updateUser(@PathVariable("userId") int id, @Valid @RequestBody UserUpdateDTO req) {
         return new ResponseEntity<>(userService.updateUser(id, req), HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable("userId") Long id) {
+    public ResponseEntity<Void> deleteUserById(@PathVariable("userId") int id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    /*
-    //SELECT *  , count(ab.author_id) FROM author_book ab join author a on ab.book_id = a.id;
-    @GetMapping("/findOlder55")
-    public ResponseEntity<List<AuthorDTO>> findOlder55(){
-        List<AuthorDTO> authordto = authorService.findAuthorOlder55();
-        return new ResponseEntity<>(authordto, HttpStatus.OK);
-
-    }
-    @GetMapping("/findAuthor")
-    public ResponseEntity<List<AuthorDTO>> findAuthorWithMostBooks(){
-        List<AuthorDTO> dto = authorService.findAuthorWithMostCountOfBooks();
-        return new ResponseEntity<>(dto , HttpStatus.OK);
-    }
-     */
 }

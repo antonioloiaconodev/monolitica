@@ -10,14 +10,12 @@ import antonioloiacono.tesi.monolitica.service.UserService;
 import antonioloiacono.tesi.monolitica.util.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
-    private ModelMapper modelMapper;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
@@ -35,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, UserUpdateDTO dto) {
+    public User updateUser(int id, UserUpdateDTO dto) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new ResourceNotFoundException("No user to update found with the id: " + id);
@@ -54,14 +52,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllUsers() {
-        List<User> users = new ArrayList<>();
+    public Set<User> findAllUsers() {
+        Set<User> users = new HashSet<>();
         userRepository.findAll().forEach(users::add);
         return users;
     }
 
     @Override
-    public User findUserById(Long id) {
+    public User findUserById(int id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new ResourceNotFoundException("No user found with the id: " + id);
@@ -70,25 +68,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(int id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new ResourceNotFoundException("No user to delete found with the id: " + id);
         }
         userRepository.deleteById(id);
     }
-
-    /*@Override
-    public List<AuthorDTO> findAuthorOlder55() {
-        List<AuthorEntity> authorEntities = authorRepository.findAuthorOlder55();
-        List<AuthorDTO> dtos = modelMapper.mapAll(authorEntities , AuthorDTO.class);
-        return dtos;
-    }
-
-    @Override
-    public List<AuthorDTO> findAuthorWithMostCountOfBooks() {
-        List<AuthorEntity> authorEntities = authorRepository.findAuthorWithMostCountOfBooks();
-        List<AuthorDTO> dto = modelMapper.mapAll(authorEntities , AuthorDTO.class);
-        return dto;
-    }*/
 }

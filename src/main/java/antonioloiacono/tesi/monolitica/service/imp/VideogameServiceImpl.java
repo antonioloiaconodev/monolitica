@@ -1,56 +1,104 @@
 package antonioloiacono.tesi.monolitica.service.imp;
 
+import antonioloiacono.tesi.monolitica.dto.VideogameSaveDTO;
+import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDTO;
+import antonioloiacono.tesi.monolitica.entity.User;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
+import antonioloiacono.tesi.monolitica.exception.ResourceAlreadyExistsException;
+import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
+import antonioloiacono.tesi.monolitica.util.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class VideogameServiceImpl implements VideogameService {
-
     private final VideogameRepository videogameRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public VideogameServiceImpl(VideogameRepository videogameRepository) {
+    @Autowired
+    public VideogameServiceImpl(VideogameRepository videogameRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.videogameRepository = videogameRepository;
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public Videogame saveVideogame(Videogame videogame) {
+    public Videogame saveVideogame(VideogameSaveDTO dto) {
+        String name = dto.getName();
+        if (videogameRepository.existsByName(name)) {
+            throw new ResourceAlreadyExistsException("Videogame already exist with name: " + name);
+        }
+        Videogame videogame = modelMapper.map(dto, Videogame.class);
+        if (dto.getUserId() != null){
+            this.addVideogameUser(dto.getUserId(), videogame);
+        }
         return videogameRepository.save(videogame);
     }
 
     @Override
-    public List<Videogame> findAllVideogames() {
-        List<Videogame> videogames = new ArrayList<>();
+    public Videogame updateVideogame(int id, VideogameUpdateDTO dto) {
+        Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
+        if (optionalVideogame.isEmpty()) {
+            throw new ResourceNotFoundException("No videogame to update found with the id: " + id);
+        }
+        Videogame videogame = optionalVideogame.get();
+        if (dto.getName() != null){
+            videogame.setName(dto.getName());
+        }
+        if (dto.getPlatform() != null){
+            videogame.setPlatform(dto.getPlatform());
+        }
+        if (dto.getGenre() != null){
+            videogame.setGenre(dto.getGenre());
+        }
+        if (dto.getPublisher() != null){
+            videogame.setPublisher(dto.getPublisher());
+        }
+        if (dto.getReleaseDate() != null){
+            videogame.setReleaseDate(dto.getReleaseDate());
+        }
+        if (dto.getUserId() != null){
+            this.addVideogameUser(dto.getUserId(), videogame);
+        }
+        return videogameRepository.save(videogame);
+    }
+
+    @Override
+    public Set<Videogame> findAllVideogames() {
+        Set<Videogame> videogames = new HashSet<>();
         videogameRepository.findAll().forEach(videogames::add);
         return videogames;
     }
 
     @Override
-    public Optional<Videogame> findVideogameById(int id) {
-        return videogameRepository.findById(id);
+    public Videogame findVideogameById(int id) {
+        Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
+        if (optionalVideogame.isEmpty()) {
+            throw new ResourceNotFoundException("No videogame found with the id: " + id);
+        }
+        return optionalVideogame.get();
     }
 
     @Override
     public void deleteVideogame(int id) {
+        Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
+        if (optionalVideogame.isEmpty()) {
+            throw new ResourceNotFoundException("No videogame to delete found with the id: " + id);
+        }
         videogameRepository.deleteById(id);
     }
 
-    /*@Override
-    public BookDTO findCountByGenre(String genre) {
-        BookEntity bookEntitie = bookRepository.findCountByGenre(genre);
-        BookDTO dto = modelMapper.map(bookEntitie , BookDTO.class);
-        return dto;
-    }
-
     @Override
-    public BookDTO findBook() {
-        BookEntity bookEntity = bookRepository.findBook();
-        BookDTO dto = modelMapper.map(bookEntity , BookDTO.class);
-        return dto;
-    }*/
+    public void addVideogameUser(int userId, Videogame videogame) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new ResourceNotFoundException("No user found with the Id: " + userId);
+        }
+        videogame.addUser(optionalUser.get());
+    }
 }
