@@ -16,9 +16,9 @@ import java.util.*;
 
 @Service
 public class VideogameServiceImpl implements VideogameService {
-    private final VideogameRepository videogameRepository;
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private VideogameRepository videogameRepository;
+    private UserRepository userRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
     public VideogameServiceImpl(VideogameRepository videogameRepository, UserRepository userRepository, ModelMapper modelMapper) {

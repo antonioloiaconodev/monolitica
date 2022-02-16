@@ -1,11 +1,16 @@
 package antonioloiacono.tesi.monolitica.entity;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "user")
 public class User {
@@ -22,10 +27,12 @@ public class User {
     @Column(length = 50, name = "last_name", nullable = false)
     private String lastName;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "user_videogame", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn (name = "videogame_id", referencedColumnName = "id"))
+    @JsonIgnoreProperties("users")
     private Set<Videogame> videogames = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties("user")
     private Set<Comment> comments = new HashSet<>();
 }

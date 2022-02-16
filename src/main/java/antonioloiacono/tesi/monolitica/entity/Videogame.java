@@ -1,12 +1,15 @@
 package antonioloiacono.tesi.monolitica.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import javax.persistence.*;
 import java.util.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "videogame")
 public class Videogame {
@@ -30,9 +33,11 @@ public class Videogame {
     private Date releaseDate;
 
     @ManyToMany(mappedBy = "videogames")
+    @JsonIgnoreProperties("videogames")
     private Set<User> users = new HashSet<>();
 
-    @OneToMany(mappedBy = "videogame", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "videogame")
+    @JsonIgnoreProperties("videogame")
     private Set<Comment> comments = new HashSet<>();
 
     public void addUser(User user) {

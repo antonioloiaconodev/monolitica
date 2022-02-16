@@ -14,8 +14,8 @@ import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private UserRepository userRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
