@@ -4,7 +4,7 @@ import antonioloiacono.tesi.monolitica.dto.CommentDTO;
 import antonioloiacono.tesi.monolitica.entity.Comment;
 import antonioloiacono.tesi.monolitica.entity.User;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
-import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
 import antonioloiacono.tesi.monolitica.repository.CommentRepository;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
@@ -35,11 +35,11 @@ public class CommentServiceImpl implements CommentService {
         int videogameId = dto.getVideogameId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            throw new ResourceNotFoundException("No user found with the id: " + userId);
+            throw new RecordNotFoundException("No user found with the id: " + userId);
         }
         Optional<Videogame> optionalVideogame = videogameRepository.findById(videogameId);
         if (optionalVideogame.isEmpty()) {
-            throw new ResourceNotFoundException("No videogame found with the id: " + videogameId);
+            throw new RecordNotFoundException("No videogame found with the id: " + videogameId);
         }
         Comment comment = modelMapper.map(dto, Comment.class);
         comment.setUser(optionalUser.get());
@@ -53,15 +53,15 @@ public class CommentServiceImpl implements CommentService {
         int videogameId = dto.getVideogameId();
         Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()) {
-            throw new ResourceNotFoundException("No comment to update found with the id: " + id);
+            throw new RecordNotFoundException("No comment to update found with the id: " + id);
         }
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            throw new ResourceNotFoundException("No user found with the id: " + userId);
+            throw new RecordNotFoundException("No user found with the id: " + userId);
         }
         Optional<Videogame> optionalVideogame = videogameRepository.findById(videogameId);
         if (optionalVideogame.isEmpty()) {
-            throw new ResourceNotFoundException("No videogame found with the id: " + videogameId);
+            throw new RecordNotFoundException("No videogame found with the id: " + videogameId);
         }
         Comment comment = optionalComment.get();
         comment.setUser(optionalUser.get());
@@ -81,7 +81,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment findCommentById(int id) {
         Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()) {
-            throw new ResourceNotFoundException("No comment found with the id: " + id);
+            throw new RecordNotFoundException("No comment found with the id: " + id);
         }
         return optionalComment.get();
     }
@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(int id) {
         Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()) {
-            throw new ResourceNotFoundException("No comment to delete found with the id: " + id);
+            throw new RecordNotFoundException("No comment to delete found with the id: " + id);
         }
         commentRepository.deleteById(id);
     }

@@ -3,8 +3,8 @@ package antonioloiacono.tesi.monolitica.service.imp;
 import antonioloiacono.tesi.monolitica.dto.UserSaveDTO;
 import antonioloiacono.tesi.monolitica.dto.UserUpdateDTO;
 import antonioloiacono.tesi.monolitica.entity.User;
-import antonioloiacono.tesi.monolitica.exception.ResourceAlreadyExistsException;
-import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
+import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.service.UserService;
 import antonioloiacono.tesi.monolitica.util.ModelMapper;
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public User saveUser(UserSaveDTO dto) {
         String email = dto.getEmail();
         if (userRepository.existsByEmail(email)) {
-            throw new ResourceAlreadyExistsException("User already exist with email: " + email);
+            throw new RecordAlreadyExistsException("User already exist with email: " + email);
         }
         return userRepository.save(modelMapper.map(dto, User.class));
     }
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(int id, UserUpdateDTO dto) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            throw new ResourceNotFoundException("No user to update found with the id: " + id);
+            throw new RecordNotFoundException("No user to update found with the id: " + id);
         }
         User user = optionalUser.get();
         if (dto.getEmail() != null){
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public User findUserById(int id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            throw new ResourceNotFoundException("No user found with the id: " + id);
+            throw new RecordNotFoundException("No user found with the id: " + id);
         }
         return optionalUser.get();
     }
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            throw new ResourceNotFoundException("No user to delete found with the id: " + id);
+            throw new RecordNotFoundException("No user to delete found with the id: " + id);
         }
         userRepository.deleteById(id);
     }

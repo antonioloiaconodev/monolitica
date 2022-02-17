@@ -4,8 +4,8 @@ import antonioloiacono.tesi.monolitica.dto.VideogameSaveDTO;
 import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDTO;
 import antonioloiacono.tesi.monolitica.entity.User;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
-import antonioloiacono.tesi.monolitica.exception.ResourceAlreadyExistsException;
-import antonioloiacono.tesi.monolitica.exception.ResourceNotFoundException;
+import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
+import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
@@ -31,7 +31,7 @@ public class VideogameServiceImpl implements VideogameService {
     public Videogame saveVideogame(VideogameSaveDTO dto) {
         String name = dto.getName();
         if (videogameRepository.existsByName(name)) {
-            throw new ResourceAlreadyExistsException("Videogame already exist with name: " + name);
+            throw new RecordAlreadyExistsException("Videogame already exist with name: " + name);
         }
         Videogame videogame = modelMapper.map(dto, Videogame.class);
         if (dto.getUserId() != null){
@@ -44,7 +44,7 @@ public class VideogameServiceImpl implements VideogameService {
     public Videogame updateVideogame(int id, VideogameUpdateDTO dto) {
         Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
         if (optionalVideogame.isEmpty()) {
-            throw new ResourceNotFoundException("No videogame to update found with the id: " + id);
+            throw new RecordNotFoundException("No videogame to update found with the id: " + id);
         }
         Videogame videogame = optionalVideogame.get();
         if (dto.getName() != null){
@@ -79,7 +79,7 @@ public class VideogameServiceImpl implements VideogameService {
     public Videogame findVideogameById(int id) {
         Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
         if (optionalVideogame.isEmpty()) {
-            throw new ResourceNotFoundException("No videogame found with the id: " + id);
+            throw new RecordNotFoundException("No videogame found with the id: " + id);
         }
         return optionalVideogame.get();
     }
@@ -88,7 +88,7 @@ public class VideogameServiceImpl implements VideogameService {
     public void deleteVideogame(int id) {
         Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
         if (optionalVideogame.isEmpty()) {
-            throw new ResourceNotFoundException("No videogame to delete found with the id: " + id);
+            throw new RecordNotFoundException("No videogame to delete found with the id: " + id);
         }
         videogameRepository.deleteById(id);
     }
@@ -97,7 +97,7 @@ public class VideogameServiceImpl implements VideogameService {
     public void addVideogameUser(int userId, Videogame videogame) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            throw new ResourceNotFoundException("No user found with the Id: " + userId);
+            throw new RecordNotFoundException("No user found with the Id: " + userId);
         }
         videogame.addUser(optionalUser.get());
     }
