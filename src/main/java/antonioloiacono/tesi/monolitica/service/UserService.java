@@ -1,21 +1,20 @@
 package antonioloiacono.tesi.monolitica.service;
 
-import antonioloiacono.tesi.monolitica.dto.UserSaveDTO;
-import antonioloiacono.tesi.monolitica.dto.UserUpdateDTO;
-import antonioloiacono.tesi.monolitica.entity.User;
-import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
-import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
-
+import antonioloiacono.tesi.monolitica.dto.UserCreateDto;
+import antonioloiacono.tesi.monolitica.dto.UserDto;
+import antonioloiacono.tesi.monolitica.dto.UserUpdateDto;
 import java.util.Set;
 
 public interface UserService {
-    User saveUser(UserSaveDTO dto) throws RecordAlreadyExistsException;
+    Set<UserDto> findAllUsers();
 
-    User updateUser(int id, UserUpdateDTO dto) throws RecordNotFoundException;
+    UserDto findUserById(Long id);
 
-    Set<User> findAllUsers() throws RecordNotFoundException;
+    UserDto createUser(UserCreateDto userCreateDto);
 
-    User findUserById(int id) throws RecordNotFoundException;
+    UserDto updateUser(Long id, UserUpdateDto userUpdateDto);
 
-    void deleteUser(int id) throws RecordNotFoundException;
+    UserDto addVideogameToUser(Long id, Long videogameId);
+
+    void deleteVideogameFromUser(Long id, Long videogameId);
 }

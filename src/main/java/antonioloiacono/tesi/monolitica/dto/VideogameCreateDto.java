@@ -6,7 +6,7 @@ import javax.validation.constraints.*;
 import java.util.Date;
 
 @Data
-public class VideogameSaveDTO {
+public class VideogameCreateDto {
     @NotEmpty(message = "The name is required.")
     @Size(min = 2, max = 100, message = "The length of name must be between 2 and 100 characters.")
     private String name;
@@ -27,7 +27,4 @@ public class VideogameSaveDTO {
     @Past(message = "The release date must be in the past.")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date releaseDate;
-
-    @Positive(message = "The user's Id must be greater than 0")
-    private Integer userId;
 }

@@ -1,11 +1,9 @@
 package antonioloiacono.tesi.monolitica.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 
 @Getter
@@ -16,16 +14,16 @@ import javax.persistence.*;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
-    @JsonIgnoreProperties("comments")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "videogame_id", nullable = false, referencedColumnName = "id")
-    @JsonIgnoreProperties("comments")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "videogame_id")
+    @JsonIgnore
     private Videogame videogame;
 
     @Lob

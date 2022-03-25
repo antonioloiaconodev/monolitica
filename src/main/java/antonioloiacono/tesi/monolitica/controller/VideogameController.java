@@ -1,52 +1,47 @@
 package antonioloiacono.tesi.monolitica.controller;
 
-import antonioloiacono.tesi.monolitica.dto.VideogameSaveDTO;
-import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDTO;
-import antonioloiacono.tesi.monolitica.entity.Videogame;
-import antonioloiacono.tesi.monolitica.service.UserService;
+import antonioloiacono.tesi.monolitica.dto.*;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/videogames")
 public class VideogameController {
+
     private final VideogameService videogameService;
-    private final UserService userService;
 
-    @Autowired
-    public VideogameController(VideogameService videogameService, UserService userService) {
+    public VideogameController(VideogameService videogameService) {
+        super();
         this.videogameService = videogameService;
-        this.userService = userService;
-    }
-
-    @PostMapping
-    public ResponseEntity<Videogame> createVideogame(@Valid @RequestBody VideogameSaveDTO req) {
-        return new ResponseEntity<>(videogameService.saveVideogame(req), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<Set<Videogame>> findAllVideogames() {
+    public ResponseEntity<List<VideogameDto>> findAllVideogames() {
         return new ResponseEntity<>(videogameService.findAllVideogames(), HttpStatus.OK);
     }
 
-    @GetMapping("/{videogameId}")
-    public ResponseEntity<Videogame> findVideogameById(@PathVariable("videogameId") int id) {
-        return new ResponseEntity<>(videogameService.findVideogameById(id) , HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<VideogameDto> findVideogameById(@PathVariable(name = "id") Long id) {
+        return new ResponseEntity<>(videogameService.findVideogameById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/{videogameId}")
-    public ResponseEntity<Videogame> updateUser(@PathVariable("videogameId") int id, @Valid @RequestBody VideogameUpdateDTO req) {
-        return new ResponseEntity<>(videogameService.updateVideogame(id, req), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<VideogameDto> createVideogame(@Valid @RequestBody VideogameCreateDto videogameCreateDto) {
+        return new ResponseEntity<>(videogameService.createVideogame(videogameCreateDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{videogameId}")
-    public ResponseEntity<Void> deleteVideogameById(@PathVariable("videogameId") int id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<VideogameDto> updateVideogame(@PathVariable Long id, @Valid @RequestBody VideogameUpdateDto videogameUpdateDto) {
+        return new ResponseEntity<>(videogameService.updateVideogame(id, videogameUpdateDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteVideogame(@PathVariable(name = "id") Long id) {
         videogameService.deleteVideogame(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

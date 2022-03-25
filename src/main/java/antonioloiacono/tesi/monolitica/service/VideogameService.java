@@ -1,22 +1,18 @@
 package antonioloiacono.tesi.monolitica.service;
 
-import antonioloiacono.tesi.monolitica.dto.VideogameSaveDTO;
-import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDTO;
-import antonioloiacono.tesi.monolitica.entity.Videogame;
-import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
-import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
-import java.util.Set;
+import antonioloiacono.tesi.monolitica.dto.VideogameCreateDto;
+import antonioloiacono.tesi.monolitica.dto.VideogameDto;
+import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDto;
+import java.util.List;
 
 public interface VideogameService {
-    Videogame saveVideogame(VideogameSaveDTO dto) throws RecordAlreadyExistsException;
+    List<VideogameDto> findAllVideogames();
 
-    Videogame updateVideogame(int id, VideogameUpdateDTO dto) throws RecordNotFoundException;
+    VideogameDto findVideogameById(Long id);
 
-    Set<Videogame> findAllVideogames() throws RecordNotFoundException;
+    VideogameDto createVideogame(VideogameCreateDto videogameCreateDto);
 
-    Videogame findVideogameById(int id) throws RecordNotFoundException;
+    VideogameDto updateVideogame(Long id, VideogameUpdateDto videogameUpdateDto);
 
-    void deleteVideogame(int id) throws RecordNotFoundException;
-
-    void addVideogameUser(int userId, Videogame videogame) throws RecordNotFoundException;
+    void deleteVideogame(Long id);
 }

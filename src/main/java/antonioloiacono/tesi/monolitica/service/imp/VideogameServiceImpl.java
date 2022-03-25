@@ -1,104 +1,87 @@
 package antonioloiacono.tesi.monolitica.service.imp;
 
-import antonioloiacono.tesi.monolitica.dto.VideogameSaveDTO;
-import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDTO;
-import antonioloiacono.tesi.monolitica.entity.User;
+import antonioloiacono.tesi.monolitica.dto.VideogameCreateDto;
+import antonioloiacono.tesi.monolitica.dto.VideogameDto;
+import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDto;
+import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
 import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
-import antonioloiacono.tesi.monolitica.repository.UserRepository;
+import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
-import antonioloiacono.tesi.monolitica.util.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class VideogameServiceImpl implements VideogameService {
-    private VideogameRepository videogameRepository;
-    private UserRepository userRepository;
-    private ModelMapper modelMapper;
 
-    @Autowired
-    public VideogameServiceImpl(VideogameRepository videogameRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    private final VideogameRepository videogameRepository;
+    private final ModelMapper modelMapper;
+
+    public VideogameServiceImpl(
+            VideogameRepository videogameRepository,
+            ModelMapper modelMapper
+    ) {
+        super();
         this.videogameRepository = videogameRepository;
-        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
     @Override
-    public Videogame saveVideogame(VideogameSaveDTO dto) {
-        String name = dto.getName();
-        if (videogameRepository.existsByName(name)) {
-            throw new RecordAlreadyExistsException("Videogame already exist with name: " + name);
-        }
-        Videogame videogame = modelMapper.map(dto, Videogame.class);
-        if (dto.getUserId() != null){
-            this.addVideogameUser(dto.getUserId(), videogame);
-        }
-        return videogameRepository.save(videogame);
+    public List<VideogameDto> findAllVideogames() {
+        return videogameRepository.findAll().stream().map(videogame -> modelMapper.map(videogame, VideogameDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Videogame updateVideogame(int id, VideogameUpdateDTO dto) {
-        Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
-        if (optionalVideogame.isEmpty()) {
-            throw new RecordNotFoundException("No videogame to update found with the id: " + id);
-        }
-        Videogame videogame = optionalVideogame.get();
-        if (dto.getName() != null){
-            videogame.setName(dto.getName());
-        }
-        if (dto.getPlatform() != null){
-            videogame.setPlatform(dto.getPlatform());
-        }
-        if (dto.getGenre() != null){
-            videogame.setGenre(dto.getGenre());
-        }
-        if (dto.getPublisher() != null){
-            videogame.setPublisher(dto.getPublisher());
-        }
-        if (dto.getReleaseDate() != null){
-            videogame.setReleaseDate(dto.getReleaseDate());
-        }
-        if (dto.getUserId() != null){
-            this.addVideogameUser(dto.getUserId(), videogame);
-        }
-        return videogameRepository.save(videogame);
+    public VideogameDto findVideogameById(Long id) {
+        Videogame videogame = videogameRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
+        return modelMapper.map(videogame, VideogameDto.class);
     }
 
     @Override
-    public Set<Videogame> findAllVideogames() {
-        Set<Videogame> videogames = new HashSet<>();
-        videogameRepository.findAll().forEach(videogames::add);
-        return videogames;
+    public VideogameDto createVideogame(VideogameCreateDto videogameCreateDto) {
+        String name = videogameCreateDto.getName();
+        Optional<Videogame> videogame = videogameRepository.findByName(name);
+        if(videogame.isPresent()){
+            throw new RecordAlreadyExistsException("Videogame already exist with email: " + name);
+        }
+        Videogame videogameCreate = videogameRepository.save(modelMapper.map(videogameCreateDto, Videogame.class));
+        return modelMapper.map(videogameCreate, VideogameDto.class);
     }
 
     @Override
-    public Videogame findVideogameById(int id) {
-        Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
-        if (optionalVideogame.isEmpty()) {
-            throw new RecordNotFoundException("No videogame found with the id: " + id);
+    public VideogameDto updateVideogame(Long id, VideogameUpdateDto videogameUpdateDto) {
+        Videogame videogame = videogameRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame to update found with the id: " + id));
+       //TODO USARE BEANUTILS.COPY E' LO STESSO?
+        if (videogameUpdateDto.getName() != null){
+            videogame.setName(videogameUpdateDto.getName());
         }
-        return optionalVideogame.get();
+        if (videogameUpdateDto.getPlatform() != null){
+            videogame.setPlatform(videogameUpdateDto.getPlatform());
+        }
+        if (videogameUpdateDto.getGenre() != null){
+            videogame.setGenre(videogameUpdateDto.getGenre());
+        }
+        if (videogameUpdateDto.getPublisher() != null){
+            videogame.setPublisher(videogameUpdateDto.getPublisher());
+        }
+        if (videogameUpdateDto.getReleaseDate() != null){
+            videogame.setReleaseDate(videogameUpdateDto.getReleaseDate());
+        }
+        Videogame videogameUpdate = videogameRepository.save(videogame);
+        return modelMapper.map(videogameUpdate, VideogameDto.class);
     }
 
     @Override
-    public void deleteVideogame(int id) {
-        Optional<Videogame> optionalVideogame = videogameRepository.findById(id);
-        if (optionalVideogame.isEmpty()) {
-            throw new RecordNotFoundException("No videogame to delete found with the id: " + id);
-        }
-        videogameRepository.deleteById(id);
-    }
-
-    @Override
-    public void addVideogameUser(int userId, Videogame videogame) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("No user found with the Id: " + userId);
-        }
-        videogame.addUser(optionalUser.get());
+    public void deleteVideogame(Long id) {
+        Videogame videogame = videogameRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame to delete found with the id: " + id));
+        videogameRepository.delete(videogame);
     }
 }

@@ -3,6 +3,8 @@ package antonioloiacono.tesi.monolitica.repository;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface VideogameRepository extends JpaRepository<Videogame, Integer> {
-    boolean existsByName(String name);
+import java.util.Optional;
+
+public interface VideogameRepository extends JpaRepository<Videogame, Long> {
+    Optional<Videogame> findByName(String name);
 }

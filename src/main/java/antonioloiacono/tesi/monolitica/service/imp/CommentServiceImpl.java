@@ -1,6 +1,8 @@
 package antonioloiacono.tesi.monolitica.service.imp;
 
-import antonioloiacono.tesi.monolitica.dto.CommentDTO;
+import antonioloiacono.tesi.monolitica.dto.CommentDto;
+import antonioloiacono.tesi.monolitica.dto.CommentCreateDto;
+import antonioloiacono.tesi.monolitica.dto.CommentUpdateDto;
 import antonioloiacono.tesi.monolitica.entity.Comment;
 import antonioloiacono.tesi.monolitica.entity.User;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
@@ -9,20 +11,25 @@ import antonioloiacono.tesi.monolitica.repository.CommentRepository;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.CommentService;
-import antonioloiacono.tesi.monolitica.util.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-    private CommentRepository commentRepository;
-    private UserRepository userRepository;
-    private VideogameRepository videogameRepository;
-    private ModelMapper modelMapper;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final VideogameRepository videogameRepository;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository, VideogameRepository videogameRepository, ModelMapper modelMapper) {
+    public CommentServiceImpl(
+            CommentRepository commentRepository,
+            UserRepository userRepository,
+            VideogameRepository videogameRepository,
+            ModelMapper modelMapper
+    ) {
+        super();
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.videogameRepository = videogameRepository;
@@ -30,68 +37,56 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment saveComment(CommentDTO dto) {
-        int userId = dto.getUserId();
-        int videogameId = dto.getVideogameId();
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("No user found with the id: " + userId);
-        }
-        Optional<Videogame> optionalVideogame = videogameRepository.findById(videogameId);
-        if (optionalVideogame.isEmpty()) {
-            throw new RecordNotFoundException("No videogame found with the id: " + videogameId);
-        }
-        Comment comment = modelMapper.map(dto, Comment.class);
-        comment.setUser(optionalUser.get());
-        comment.setVideogame(optionalVideogame.get());
-        return commentRepository.save(comment);
+    public List<CommentDto> findAllComments() {
+        return commentRepository.findAll().stream().map(comment -> modelMapper.map(comment, CommentDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Comment updateComment(int id, CommentDTO dto) {
-        int userId = dto.getUserId();
-        int videogameId = dto.getVideogameId();
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isEmpty()) {
-            throw new RecordNotFoundException("No comment to update found with the id: " + id);
-        }
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("No user found with the id: " + userId);
-        }
-        Optional<Videogame> optionalVideogame = videogameRepository.findById(videogameId);
-        if (optionalVideogame.isEmpty()) {
-            throw new RecordNotFoundException("No videogame found with the id: " + videogameId);
-        }
-        Comment comment = optionalComment.get();
-        comment.setUser(optionalUser.get());
-        comment.setVideogame(optionalVideogame.get());
-        comment.setComment(dto.getComment());
-        return commentRepository.save(comment);
+    public CommentDto findCommentById(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No comment found with the id: " + id));
+        return modelMapper.map(comment, CommentDto.class);
     }
 
     @Override
-    public Set<Comment> findAllComments() {
-        Set<Comment> comments = new HashSet<>();
-        commentRepository.findAll().forEach(comments::add);
-        return comments;
+    public CommentDto createComment(CommentCreateDto commentCreateDto) {
+        Long userId = commentCreateDto.getUserId();
+        Long videogameId = commentCreateDto.getVideogameId();
+        String comment = commentCreateDto.getComment();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + userId));
+        Videogame videogame = videogameRepository.findById(videogameId)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + videogameId));
+        Comment commentCreate = new Comment();
+        commentCreate.setUser(user);
+        commentCreate.setVideogame(videogame);
+        commentCreate.setComment(comment);
+        return modelMapper.map(commentRepository.save(commentCreate), CommentDto.class);
     }
 
     @Override
-    public Comment findCommentById(int id) {
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isEmpty()) {
-            throw new RecordNotFoundException("No comment found with the id: " + id);
+    public CommentDto updateComment(Long id, CommentUpdateDto commentUpdateDto) {
+        Long userId = commentUpdateDto.getUserId();
+        Long videogameId = commentUpdateDto.getVideogameId();
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No comment found with the id: " + id));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + userId));
+        Videogame videogame = videogameRepository.findById(videogameId)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + videogameId));
+        comment.setUser(user);
+        comment.setVideogame(videogame);
+        if (commentUpdateDto.getComment() != null){
+            comment.setComment(commentUpdateDto.getComment());
         }
-        return optionalComment.get();
+        return modelMapper.map(commentRepository.save(comment), CommentDto.class);
     }
 
     @Override
-    public void deleteComment(int id) {
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isEmpty()) {
-            throw new RecordNotFoundException("No comment to delete found with the id: " + id);
-        }
-        commentRepository.deleteById(id);
+    public void deleteComment(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No comment to delete found with the id: " + id));
+        commentRepository.delete(comment);
     }
 }

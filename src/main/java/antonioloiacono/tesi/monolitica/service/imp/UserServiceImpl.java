@@ -1,78 +1,96 @@
 package antonioloiacono.tesi.monolitica.service.imp;
 
-import antonioloiacono.tesi.monolitica.dto.UserSaveDTO;
-import antonioloiacono.tesi.monolitica.dto.UserUpdateDTO;
+import antonioloiacono.tesi.monolitica.dto.UserCreateDto;
+import antonioloiacono.tesi.monolitica.dto.UserDto;
+import antonioloiacono.tesi.monolitica.dto.UserUpdateDto;
 import antonioloiacono.tesi.monolitica.entity.User;
+import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
 import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
+import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.UserService;
-import antonioloiacono.tesi.monolitica.util.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
-    private ModelMapper modelMapper;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+    private final UserRepository userRepository;
+    private final VideogameRepository videogameRepository;
+    private final ModelMapper modelMapper;
+
+    public UserServiceImpl(
+            UserRepository userRepository,
+            VideogameRepository videogameRepository,
+            ModelMapper modelMapper
+    ) {
+        super();
         this.userRepository = userRepository;
+        this.videogameRepository = videogameRepository;
         this.modelMapper = modelMapper;
     }
 
     @Override
-    public User saveUser(UserSaveDTO dto) {
-        String email = dto.getEmail();
-        if (userRepository.existsByEmail(email)) {
+    public Set<UserDto> findAllUsers() {
+        return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDto.class))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public UserDto findUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + id));
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public UserDto createUser(UserCreateDto userCreateDto) {
+        String email = userCreateDto.getEmail();
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()){
             throw new RecordAlreadyExistsException("User already exist with email: " + email);
         }
-        return userRepository.save(modelMapper.map(dto, User.class));
+        User userCreate = userRepository.save(modelMapper.map(userCreateDto, User.class));
+        return modelMapper.map(userCreate, UserDto.class);
     }
 
     @Override
-    public User updateUser(int id, UserUpdateDTO dto) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("No user to update found with the id: " + id);
+    public UserDto updateUser(Long id, UserUpdateDto userUpdateDto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No user to update found with the id: " + id));
+        if (userUpdateDto.getEmail() != null){
+            user.setEmail(userUpdateDto.getEmail());
         }
-        User user = optionalUser.get();
-        if (dto.getEmail() != null){
-            user.setEmail(dto.getEmail());
+        if (userUpdateDto.getFirstName() != null){
+            user.setFirstName(userUpdateDto.getFirstName());
         }
-        if (dto.getFirstName() != null){
-            user.setFirstName(dto.getFirstName());
+        if (userUpdateDto.getLastName() != null){
+            user.setLastName(userUpdateDto.getLastName());
         }
-        if (dto.getLastName() != null){
-            user.setLastName(dto.getLastName());
-        }
-        return userRepository.save(user);
+        User userUpdate = userRepository.save(user);
+        return modelMapper.map(userUpdate, UserDto.class);
     }
 
     @Override
-    public Set<User> findAllUsers() {
-        Set<User> users = new HashSet<>();
-        userRepository.findAll().forEach(users::add);
-        return users;
+    public UserDto addVideogameToUser(Long id, Long videogameId) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + id));
+        Videogame videogame = videogameRepository.findById(videogameId)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
+        user.addVideogame(videogame);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @Override
-    public User findUserById(int id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("No user found with the id: " + id);
-        }
-        return optionalUser.get();
-    }
-
-    @Override
-    public void deleteUser(int id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("No user to delete found with the id: " + id);
-        }
-        userRepository.deleteById(id);
+    public void deleteVideogameFromUser(Long id, Long videogameId) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + id));
+        Videogame videogame = videogameRepository.findById(videogameId)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
+        user.removeVideogame(videogame);
+        userRepository.save(user);
     }
 }

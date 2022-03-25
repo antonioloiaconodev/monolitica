@@ -1,5 +1,6 @@
 package antonioloiacono.tesi.monolitica.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.*;
 public class Videogame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(unique = true, length = 100, nullable = false)
     private String name;
@@ -33,20 +34,10 @@ public class Videogame {
     private Date releaseDate;
 
     @ManyToMany(mappedBy = "videogames")
-    @JsonIgnoreProperties("videogames")
-    private Set<User> users = new HashSet<>();
+    @JsonIgnore
+    private Set<User> users;
 
     @OneToMany(mappedBy = "videogame")
-    @JsonIgnoreProperties("videogame")
-    private Set<Comment> comments = new HashSet<>();
-
-    public void addUser(User user) {
-        this.users.add(user);
-        user.getVideogames().add(this);
-    }
-
-    public void removeUser(User user) {
-        this.users.remove(user);
-        user.getVideogames().remove(this);
-    }
+    @JsonIgnore
+    private Set<Comment> comments;
 }

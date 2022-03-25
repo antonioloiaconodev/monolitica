@@ -1,18 +1,19 @@
 package antonioloiacono.tesi.monolitica.service;
 
-import antonioloiacono.tesi.monolitica.dto.CommentDTO;
-import antonioloiacono.tesi.monolitica.entity.Comment;
-import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
-import java.util.Set;
+import antonioloiacono.tesi.monolitica.dto.CommentCreateDto;
+import antonioloiacono.tesi.monolitica.dto.CommentDto;
+import antonioloiacono.tesi.monolitica.dto.CommentUpdateDto;
+import java.util.List;
 
 public interface CommentService {
-    Comment saveComment(CommentDTO dto) throws RecordNotFoundException;
 
-    Comment updateComment(int id, CommentDTO dto) throws RecordNotFoundException;
+    List<CommentDto> findAllComments();
 
-    Set<Comment> findAllComments() throws RecordNotFoundException;
+    CommentDto findCommentById(Long id);
 
-    Comment findCommentById(int id) throws RecordNotFoundException;
+    CommentDto createComment(CommentCreateDto commentCreateDto);
 
-    void deleteComment(int id) throws RecordNotFoundException;
+    CommentDto updateComment(Long id, CommentUpdateDto commentUpdateDto);
+
+    void deleteComment(Long id);
 }
