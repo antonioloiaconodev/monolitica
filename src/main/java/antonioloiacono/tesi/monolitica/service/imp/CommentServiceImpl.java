@@ -37,9 +37,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> findAllComments() {
+    public Set<CommentDto> findAllComments() {
         return commentRepository.findAll().stream().map(comment -> modelMapper.map(comment, CommentDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/videogames")
@@ -20,7 +20,7 @@ public class VideogameController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VideogameDto>> findAllVideogames() {
+    public ResponseEntity<Set<VideogameDto>> findAllVideogames() {
         return new ResponseEntity<>(videogameService.findAllVideogames(), HttpStatus.OK);
     }
 

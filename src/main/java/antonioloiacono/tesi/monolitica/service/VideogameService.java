@@ -3,10 +3,10 @@ package antonioloiacono.tesi.monolitica.service;
 import antonioloiacono.tesi.monolitica.dto.VideogameCreateDto;
 import antonioloiacono.tesi.monolitica.dto.VideogameDto;
 import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDto;
-import java.util.List;
+import java.util.Set;
 
 public interface VideogameService {
-    List<VideogameDto> findAllVideogames();
+    Set<VideogameDto> findAllVideogames();
 
     VideogameDto findVideogameById(Long id);
 

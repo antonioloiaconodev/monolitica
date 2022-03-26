@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  monolitica:
+    image: monolitica:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/monoliticadb?allowPublicKeyRetrieval=true&useSSL=false
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql:8.0.24
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=monoliticadb
+      - MYSQL_USER=sa
+      - MYSQL_PASSWORD=1234
+
+networks:
+  backend:
+    name: monolitica_backend
+    driver: bridge

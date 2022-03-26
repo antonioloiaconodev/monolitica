@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/comments")
@@ -20,7 +20,7 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CommentDto>> findAllComments() {
+    public ResponseEntity<Set<CommentDto>> findAllComments() {
         return new ResponseEntity<>(commentService.findAllComments(), HttpStatus.OK);
     }
 

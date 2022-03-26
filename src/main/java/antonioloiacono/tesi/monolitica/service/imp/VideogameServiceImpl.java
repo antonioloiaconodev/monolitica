@@ -31,9 +31,9 @@ public class VideogameServiceImpl implements VideogameService {
     }
 
     @Override
-    public List<VideogameDto> findAllVideogames() {
+    public Set<VideogameDto> findAllVideogames() {
         return videogameRepository.findAll().stream().map(videogame -> modelMapper.map(videogame, VideogameDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
