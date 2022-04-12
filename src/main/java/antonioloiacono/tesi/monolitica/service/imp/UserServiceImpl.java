@@ -4,7 +4,6 @@ import antonioloiacono.tesi.monolitica.dto.UserCreateDto;
 import antonioloiacono.tesi.monolitica.dto.UserDto;
 import antonioloiacono.tesi.monolitica.dto.UserUpdateDto;
 import antonioloiacono.tesi.monolitica.entity.User;
-import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
 import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
 import antonioloiacono.tesi.monolitica.repository.UserRepository;
@@ -19,17 +18,14 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final VideogameRepository videogameRepository;
     private final ModelMapper modelMapper;
 
     public UserServiceImpl(
             UserRepository userRepository,
-            VideogameRepository videogameRepository,
             ModelMapper modelMapper
     ) {
         super();
         this.userRepository = userRepository;
-        this.videogameRepository = videogameRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -60,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(Long id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("No user to update found with the id: " + id));
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + id));
         if (userUpdateDto.getEmail() != null){
             user.setEmail(userUpdateDto.getEmail());
         }
@@ -72,25 +68,5 @@ public class UserServiceImpl implements UserService {
         }
         User userUpdate = userRepository.save(user);
         return modelMapper.map(userUpdate, UserDto.class);
-    }
-
-    @Override
-    public UserDto addVideogameToUser(Long id, Long videogameId) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + id));
-        Videogame videogame = videogameRepository.findById(videogameId)
-                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
-        user.addVideogame(videogame);
-        return modelMapper.map(userRepository.save(user), UserDto.class);
-    }
-
-    @Override
-    public void deleteVideogameFromUser(Long id, Long videogameId) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + id));
-        Videogame videogame = videogameRepository.findById(videogameId)
-                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
-        user.removeVideogame(videogame);
-        userRepository.save(user);
     }
 }

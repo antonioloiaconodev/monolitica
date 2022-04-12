@@ -15,4 +15,8 @@ public interface VideogameService {
     VideogameDto updateVideogame(Long id, VideogameUpdateDto videogameUpdateDto);
 
     void deleteVideogame(Long id);
+
+    VideogameDto addUserToVideogame(Long id, Long userId);
+
+    VideogameDto removeUserToVideogame(Long id, Long userId);
 }

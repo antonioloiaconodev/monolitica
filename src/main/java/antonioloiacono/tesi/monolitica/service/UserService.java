@@ -13,8 +13,4 @@ public interface UserService {
     UserDto createUser(UserCreateDto userCreateDto);
 
     UserDto updateUser(Long id, UserUpdateDto userUpdateDto);
-
-    UserDto addVideogameToUser(Long id, Long videogameId);
-
-    void deleteVideogameFromUser(Long id, Long videogameId);
 }

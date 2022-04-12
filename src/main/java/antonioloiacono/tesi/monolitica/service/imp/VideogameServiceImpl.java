@@ -3,11 +3,11 @@ package antonioloiacono.tesi.monolitica.service.imp;
 import antonioloiacono.tesi.monolitica.dto.VideogameCreateDto;
 import antonioloiacono.tesi.monolitica.dto.VideogameDto;
 import antonioloiacono.tesi.monolitica.dto.VideogameUpdateDto;
-import antonioloiacono.tesi.monolitica.entity.Videogame;
+import antonioloiacono.tesi.monolitica.entity.User;
 import antonioloiacono.tesi.monolitica.entity.Videogame;
 import antonioloiacono.tesi.monolitica.exception.RecordAlreadyExistsException;
 import antonioloiacono.tesi.monolitica.exception.RecordNotFoundException;
-import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
+import antonioloiacono.tesi.monolitica.repository.UserRepository;
 import antonioloiacono.tesi.monolitica.repository.VideogameRepository;
 import antonioloiacono.tesi.monolitica.service.VideogameService;
 import org.modelmapper.ModelMapper;
@@ -19,14 +19,17 @@ import java.util.stream.Collectors;
 public class VideogameServiceImpl implements VideogameService {
 
     private final VideogameRepository videogameRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     public VideogameServiceImpl(
             VideogameRepository videogameRepository,
+            UserRepository userRepository,
             ModelMapper modelMapper
     ) {
         super();
         this.videogameRepository = videogameRepository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -57,8 +60,7 @@ public class VideogameServiceImpl implements VideogameService {
     @Override
     public VideogameDto updateVideogame(Long id, VideogameUpdateDto videogameUpdateDto) {
         Videogame videogame = videogameRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("No videogame to update found with the id: " + id));
-       //TODO USARE BEANUTILS.COPY E' LO STESSO?
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
         if (videogameUpdateDto.getName() != null){
             videogame.setName(videogameUpdateDto.getName());
         }
@@ -81,7 +83,27 @@ public class VideogameServiceImpl implements VideogameService {
     @Override
     public void deleteVideogame(Long id) {
         Videogame videogame = videogameRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("No videogame to delete found with the id: " + id));
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
         videogameRepository.delete(videogame);
+    }
+
+    @Override
+    public VideogameDto addUserToVideogame(Long id, Long userId) {
+        Videogame videogame = videogameRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + userId));
+        videogame.addUser(user);
+        return modelMapper.map(videogameRepository.save(videogame), VideogameDto.class);
+    }
+
+    @Override
+    public VideogameDto removeUserToVideogame(Long id, Long userId) {
+        Videogame videogame = videogameRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("No videogame found with the id: " + id));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RecordNotFoundException("No user found with the id: " + userId));
+        videogame.removeUser(user);
+        return modelMapper.map(videogameRepository.save(videogame), VideogameDto.class);
     }
 }

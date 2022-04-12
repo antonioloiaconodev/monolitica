@@ -1,14 +1,13 @@
 package antonioloiacono.tesi.monolitica.dto;
 
-import antonioloiacono.tesi.monolitica.entity.Comment;
-import antonioloiacono.tesi.monolitica.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.util.Date;
 import java.util.Set;
 
 @Data
 public class VideogameDto {
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -18,9 +17,8 @@ public class VideogameDto {
 
     private String publisher;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date releaseDate;
 
-    private Set<User> users;
-
-    private Set<Comment> comments;
+    private Set<VideogameUserDto> users;
 }

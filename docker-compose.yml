@@ -1,20 +1,27 @@
 version: "3.8"
 services:
   monolitica:
-    image: monolitica:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: monolitica
+    image: monolitica
     ports:
-      - "8080:8080"
+      - "8090:8090"
     networks:
       - backend
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/monoliticadb?allowPublicKeyRetrieval=true&useSSL=false
+      - SERVER_PORT=8090
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/monoliticadb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=1234
     depends_on:
       - mysqldb
-
   mysqldb:
+    container_name: mysqldb
     image: mysql:8.0.24
     ports:
-      - "3306:3306"
+      - "3310:3306"
     networks:
       - backend
     environment:
@@ -22,7 +29,6 @@ services:
       - MYSQL_DATABASE=monoliticadb
       - MYSQL_USER=sa
       - MYSQL_PASSWORD=1234
-
 networks:
   backend:
     name: monolitica_backend

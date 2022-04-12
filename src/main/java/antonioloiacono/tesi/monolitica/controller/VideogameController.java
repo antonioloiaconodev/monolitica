@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/videogames")
+@RequestMapping("/api/videogames")
 public class VideogameController {
 
     private final VideogameService videogameService;
@@ -43,5 +43,15 @@ public class VideogameController {
     public ResponseEntity<HttpStatus> deleteVideogame(@PathVariable(name = "id") Long id) {
         videogameService.deleteVideogame(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}/users/{userId}")
+    public ResponseEntity<VideogameDto> addUserToVideogame(@PathVariable(name = "id") Long id, @PathVariable(name = "userId") Long userId) {
+        return new ResponseEntity<>(videogameService.addUserToVideogame(id, userId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/users/{userId}")
+    public ResponseEntity<VideogameDto> removeUserToVideogame(@PathVariable(name = "id") Long id, @PathVariable(name = "userId") Long userId) {
+        return new ResponseEntity<>(videogameService.removeUserToVideogame(id, userId), HttpStatus.OK);
     }
 }

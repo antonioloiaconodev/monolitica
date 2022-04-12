@@ -1,7 +1,6 @@
 package antonioloiacono.tesi.monolitica.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,13 +30,25 @@ public class Videogame {
     private String publisher;
 
     @Column(name = "release_date", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
-    @ManyToMany(mappedBy = "videogames")
+    @OneToMany(mappedBy = "videogame", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private Set<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(name = "videogame_user", joinColumns = @JoinColumn(name = "videogame_id"), inverseJoinColumns = @JoinColumn (name = "user_id"))
     @JsonIgnore
     private Set<User> users;
 
-    @OneToMany(mappedBy = "videogame")
-    @JsonIgnore
-    private Set<Comment> comments;
+    public void addUser(User user) {
+        this.users.add(user);
+        user.getVideogames().add(this);
+    }
+
+    public void removeUser(User user) {
+        this.users.add(user);
+        user.getVideogames().remove(this);
+    }
 }

@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -39,16 +39,5 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
         return new ResponseEntity<>(userService.updateUser(id, userUpdateDto), HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}/videogames/{videogameId}")
-    public ResponseEntity<UserDto> addVideogameToUser(@PathVariable(name = "id") Long id, @PathVariable(name = "videogameId") Long videogameId) {
-        return new ResponseEntity<>(userService.addVideogameToUser(id, videogameId), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}/videogames/{videogameId}")
-    public ResponseEntity<HttpStatus> removeVideogameFromUser(@PathVariable(name = "id") Long id, @PathVariable(name = "videogameId") Long videogameId) {
-        userService.deleteVideogameFromUser(id, videogameId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

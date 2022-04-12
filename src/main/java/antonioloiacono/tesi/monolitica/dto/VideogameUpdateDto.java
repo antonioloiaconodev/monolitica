@@ -3,7 +3,7 @@ package antonioloiacono.tesi.monolitica.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import javax.validation.constraints.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 public class VideogameUpdateDto {
